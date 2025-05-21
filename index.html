@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de ASPD</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px 32px;
+            box-shadow: 0 0 16px #0002;
+        }
+        h2 {
+            margin-top: 32px;
+            margin-bottom: 8px;
+        }
+        .inputs label {
+            display: block;
+            margin: 12px 0 4px 0;
+        }
+        .inputs input[type="text"], .inputs input[type="number"], .inputs select {
+            width: 100%;
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .buffs-group {
+            margin-top: 18px;
+        }
+        .buffs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 16px;
+        }
+        .buff-checkbox {
+            display: flex;
+            align-items: center;
+            background: #f8f8f8;
+            border-radius: 4px;
+            padding: 4px 8px;
+        }
+        .buff-checkbox img {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+        .resultado {
+            margin: 24px 0 12px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .versao-radio {
+            margin-right: 16px;
+        }
+        body.dark-mode {
+            background: #181a1b;
+            color: #e0e0e0;
+        }
+        body.dark-mode .container {
+            background: #23272a;
+            box-shadow: 0 0 16px #0008;
+        }
+        body.dark-mode input, body.dark-mode select {
+            background: #23272a;
+            color: #e0e0e0;
+            border: 1px solid #444;
+        }
+        body.dark-mode .buff-checkbox {
+            background: #23272a;
+        }
+        body.dark-mode .aspd-label {
+            color: #fff !important;
+        }
+        .dropdown:focus-within #lang-dropdown,
+        #lang-dropdown.open {
+            display: block !important;
+        }
+        .btn-calc {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 28px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #1976d233;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            margin-top: 12px;
+        }
+        .btn-calc:hover, .btn-calc:focus {
+            background: #1251a3;
+            box-shadow: 0 4px 16px #1976d244;
+            transform: translateY(-2px) scale(1.03);
+            outline: none;
+        }
+        .btn-lang {
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+            box-shadow: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #titulo {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Quadrado do modo escuro -->
+<div id="darkmode-box"
+     style="position: fixed; top: 18px; right: 24px; z-index: 1100; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0002; border: 1px solid #ccc; padding: 6px 12px; display: flex; align-items: center;">
+    <span id="toggle-dark"
+          style="font-size: 1.7em; cursor: pointer; user-select: none; background: none; border: none;">🌙</span>
+</div>
+
+<!-- Quadrado do idioma -->
+<div id="lang-box"
+     style="position: fixed; top: 75px; right: 24px; z-index: 1100; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0002; border: 1px solid #ccc; padding: 6px 12px; display: flex; align-items: center; justify-content: center; width: 37px; height: 40px;">
+    <div class="dropdown" style="position: relative; width: 100%; height: 100%;">
+        <button id="lang-dropdown-btn" class="btn-lang"
+            style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: none; border: none; cursor: pointer; padding: 0;">
+            <img id="lang-flag" src="https://flagcdn.com/24x18/br.png" alt="PT-BR" style="width: 32px; height: 24px;">
+        </button>
+        <div id="lang-dropdown"
+            style="display:none; position:absolute; top:100%; left:50%; transform:translateX(-50%); margin-top:10px; background:#fff; border:1px solid #ccc; border-radius:4px; box-shadow:0 2px 8px #0002; z-index:10; min-width:48px;">
+            <button class="lang-btn" data-lang="pt" style="display:flex;align-items:center;justify-content:center;width:100%;background:none;border:none;cursor:pointer;padding:6px 0;">
+                <img src="https://flagcdn.com/24x18/br.png" alt="PT-BR" style="width:32px; height:24px;">
+            </button>
+            <button class="lang-btn" data-lang="en" style="display:flex;align-items:center;justify-content:center;width:100%;background:none;border:none;cursor:pointer;padding:6px 0;">
+                <img src="https://flagcdn.com/24x18/us.png" alt="EN" style="width:32px; height:24px;">
+            </button>
+            <button class="lang-btn" data-lang="es" style="display:flex;align-items:center;justify-content:center;width:100%;background:none;border:none;cursor:pointer;padding:6px 0;">
+                <img src="https://flagcdn.com/24x18/es.png" alt="ES" style="width:32px; height:24px;">
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h1 id="titulo">Calculadora de ASPD</h1>
+    <form class="inputs" id="aspdForm" onsubmit="return false;">
+        <p id="aviso-renewal" style="text-align:center; font-weight:bold; margin-bottom:16px; color:#d32f2f;">
+            Todos os cálculos desta página são baseados na versão <span style="color:#d32f2f;">Renewal</span> do Ragnarok Online.
+        </p>
+        <label id="label-classe">Classe Base:</label>
+        <select id="classe_base">
+            <option value="140">Espadachim (140)</option>
+            <option value="156">Gatuno (156)</option>
+            <option value="156">Arqueiro (156)</option>
+            <option value="156">Mercador (156)</option>
+            <option value="156">Noviço (156)</option>
+            <option value="156">Mago (156)</option>
+            <option value="120">Superaprendiz (120)</option>
+            <option value="130">Taekwon (130)</option>
+            <option value="156">Ninja (156)</option>
+            <option value="156">Justiceiro (156)</option>
+            <option value="140">Doram (140)</option>
+            <option value="0">Outro/Manual</option>
+        </select>
+        <label>
+            <input type="checkbox" id="arma_escudo"> <span id="label-escudo">Está usando escudo?</span>
+        </label>
+        <label id="label-agi">AGI:</label>
+        <input type="number" id="agi">
+        <label id="label-dex">DEX:</label>
+        <input type="number" id="dex">
+        <label id="label-bonus-equip">Bônus de Equipamento:</label>
+        <input type="number" step="any" id="bonus_equip">
+        <label id="label-nivel">Nível do personagem:</label>
+        <input type="number" id="nivel" value="100" min="1" max="185">
+    </form>
+
+    <div class="buffs-group">
+        <h2 id="h2-buffs-agi" style="text-align:center;">Buffs de AGI</h2>
+        <div class="buffs-grid">
+            <label class="buff-checkbox">
+                <input type="checkbox" id="agi_aumentar">
+                <img src="https://static.divine-pride.net/images/skill/29.png" alt="">
+                <span
+                  title="Aumentar Agilidade (Increase AGI)
+Nível máximo: 10
+Pré-requisitos: Curar 3
+Tipo: Suporte
+
+Descrição:
+Consome 15 de HP para aumentar a AGI,
+o movimento e a velocidade de ataque.
+
+Nível | AGI | Vel.Atq | Duração
+[Nv 1]: +3 | +1% | 60s
+[Nv 2]: +4 | +2% | 80s
+[Nv 3]: +5 | +3% | 100s
+[Nv 4]: +6 | +4% | 120s
+[Nv 5]: +7 | +5% | 140s
+[Nv 6]: +8 | +6% | 160s
+[Nv 7]: +9 | +7% | 180s
+[Nv 8]: +10 | +8% | 200s
+[Nv 9]: +11 | +9% | 220s
+[Nv10]: +12 | +10% | 240s"
+                  style="cursor: help; border-bottom: 1px dotted #1976d2;"
+                >Aumentar Agilidade</span>
+            </label>
+            <label class="buff-checkbox">
+                <input type="checkbox" id="agi_concentracao">
+                <img src="https://static.divine-pride.net/images/skill/45.png" alt="">
+                <span
+                  title="Concentrar (Improve Concentration)
+Nível máximo: 10
+Pré-requisitos: Olhos de Águia 1
+Tipo: Suporte
+
+Descrição:
+Fornece um bônus de DES e AGI.
+Pode revelar alvos em Esconderijo na área de 3x3 células ao redor do usuário.
+
+Nível | DES e AGI | Duração
+[Nv 1]: +3% | 60s
+[Nv 2]: +4% | 80s
+[Nv 3]: +5% | 100s
+[Nv 4]: +6% | 120s
+[Nv 5]: +7% | 140s
+[Nv 6]: +8% | 160s
+[Nv 7]: +9% | 180s
+[Nv 8]: +10% | 200s
+[Nv 9]: +11% | 220s
+[Nv10]: +12% | 240s"
+                  style="cursor: help; border-bottom: 1px dotted #1976d2;"
+                >Concentrar</span>
+            </label>
+            <label class="buff-checkbox">
+                <input type="checkbox" id="agi_comida7">
+                <img src="https://www.divine-pride.net/img/items/item/LATAM/12090" alt="">
+                Comida AGI +7
+            </label>
+            <label class="buff-checkbox">
+                <input type="checkbox" id="agi_comida10">
+                <img src="https://www.divine-pride.net/img/items/item/LATAM/12090" alt="">
+                Comida AGI +10
+            </label>
+            <label class="buff-checkbox">
+                <input type="checkbox" id="agi_comida20">
+                <img src="https://www.divine-pride.net/img/items/item/LATAM/12090" alt="">
+                Comida AGI +20
+            </label>
+        </div>
+    </div>
+
+    <div class="buffs-group">
+        <h2 id="h2-buffs-dex" style="text-align:center;">Buffs de DES</h2>
+        <div class="buffs-grid">
+            <label class="buff-checkbox">
+                <input type="checkbox" id="dex_bencao">
+                <img src="https://static.divine-pride.net/images/skill/34.png" alt="">
+                <span
+                  title="Bênção (Blessing)
+Nível máximo: 10
+Pré-requisitos: Proteção Divina 5
+Tipo: Suporte
+
+Descrição:
+Aumenta a DES, INT, FOR, Precisão e retira os efeitos de [Maldição] e [Petrificação].
+Em Demônios e Mortos-Vivos, reduz DES, INT e FOR em 50%.
+
+Nível | DES, INT, FOR | Precisão | Duração
+[Nv 1]: +1 | +2 | 60s
+[Nv 2]: +2 | +4 | 80s
+[Nv 3]: +3 | +6 | 100s
+[Nv 4]: +4 | +8 | 120s
+[Nv 5]: +5 | +10 | 140s
+[Nv 6]: +6 | +12 | 160s
+[Nv 7]: +7 | +14 | 180s
+[Nv 8]: +8 | +16 | 200s
+[Nv 9]: +9 | +18 | 220s
+[Nv10]: +10 | +20 | 240s"
+                  style="cursor: help; border-bottom: 1px dotted #1976d2;"
+                >Bênção</span>
+            </label>
+            <label class="buff-checkbox">
+                <input type="checkbox" id="dex_comida7">
+                <img src="https://www.divine-pride.net/img/items/item/LATAM/12095" alt="">
+                Comida DES +7
+            </label>
+            <label class="buff-checkbox">
+                <input type="checkbox" id="dex_comida10">
+                <img src="https://www.divine-pride.net/img/items/item/LATAM/12095" alt="">
+                Comida DES +10
+            </label>
+            <label class="buff-checkbox">
+                <input type="checkbox" id="dex_comida20">
+                <img src="https://www.divine-pride.net/img/items/item/LATAM/12095" alt="">
+                Comida DES +20
+            </label>
+        </div>
+    </div>
+
+<!-- Buffs de ASPD -->
+<div class="buffs-group">
+    <h2 id="h2-buffs-aspd" style="text-align:center;">Buffs de ASPD</h2>
+    <div class="buffs-grid">
+        <label class="buff-checkbox">
+            <input type="checkbox" id="aspd_adrenalina">
+            <img src="https://static.divine-pride.net/images/skill/111.png" alt="">
+            <span
+              title="Adrenalina Pura (Adrenaline Rush)
+Nível máximo: 5
+Pré-requisitos: Martelo de Thor 2
+Tipo: Suporte
+
+Descrição:
+Apenas com Maça ou Machado.
+Aumenta a velocidade de ataque e Precisão
+de todos do grupo ao redor do usuário que
+estejam usando Maça ou Machado.
+Ferreiro e evoluções ganham mais Vel.Atq.
+
+Nível | Precisão | Duração
+[Nv 1]: +8 | 30s
+[Nv 2]: +11 | 60s
+[Nv 3]: +14 | 90s
+[Nv 4]: +17 | 120s
+[Nv 5]: +20 | 150s"
+              style="cursor: help; border-bottom: 1px dotted #1976d2;"
+            >Adrenalina Pura</span>
+        </label>
+        <label class="buff-checkbox">
+            <input type="checkbox" id="aspd_frenesi">
+            <img src="https://static.divine-pride.net/images/skill/359.png" alt="">
+            <span
+              title="Frenesi (Berserk)
+Nível máximo: 1
+Pré-requisitos: Nv. de classe 50
+Tipo: Ativa
+
+Descrição:
+Recupera todo o HP para ativar.
+Aumenta a velocidade de ataque, o ATQ, o movimento, ativa [Vigor] e triplica o HP.
+Reduz a DEF, DEFM, Esquiva e todo o SP.
+Drena HP a cada 15 segundos e não poderá regenerar o HP e SP normalmente.
+Enquanto estiver ativa, não poderá equipar ou usar itens, habilidades e conversar.
+Deslogar o personagem cancela o efeito."
+              style="cursor: help; border-bottom: 1px dotted #1976d2;"
+            >Frenesi</span>
+        </label>
+        <label class="buff-checkbox">
+            <input type="checkbox" id="aspd_2maos">
+            <img src="https://static.divine-pride.net/images/skill/60.png" alt="">
+            <span
+              title="Rapidez com Duas Mãos (Twohand Quicken)
+Nível máximo: 10
+Pré-requisitos: Perícia Espada 2 Mãos 1
+Tipo: Suporte
+
+Descrição:
+Apenas com Espadas de Duas Mãos.
+Aumenta a Precisão, CRIT e vel. de ataque.
+O bônus é cancelado ao desequipar a arma,
+trocar para outro tipo de arma ou receber
+[Diminuir Agilidade] ou [Pântano dos Mortos].
+
+Nível | CRIT | Precisão | Duração
+[Nv 1]: +3 | +2 | 30s
+[Nv 2]: +4 | +4 | 60s
+[Nv 3]: +5 | +6 | 90s
+[Nv 4]: +6 | +8 | 120s
+[Nv 5]: +7 | +10 | 150s
+[Nv 6]: +8 | +12 | 180s
+[Nv 7]: +9 | +14 | 210s
+[Nv 8]: +10 | +16 | 240s
+[Nv 9]: +11 | +18 | 270s
+[Nv10]: +12 | +20 | 300s"
+              style="cursor: help; border-bottom: 1px dotted #1976d2;"
+            >Rapidez com Duas Mãos</span>
+        </label>
+        <label class="buff-checkbox">
+            <input type="checkbox" id="aspd_lanca">
+            <img src="https://static.divine-pride.net/images/skill/258.png" alt="">
+            <span
+              title="Rapidez com Lança (Spear Quicken)
+Nível máximo: 10
+Pré-requisitos: Perícia com Lança 10
+Tipo: Suporte
+
+Descrição:
+Apenas com Lanças.
+Aumenta a Esquiva, o CRIT e a velocidade de ataque ao usar Lança de uma ou duas mãos.
+
+Nível | CRIT | Esquiva | Duração
+[Nv 1]: +3 | +2 | 30s
+[Nv 2]: +6 | +4 | 60s
+[Nv 3]: +9 | +6 | 90s
+[Nv 4]: +12 | +8 | 120s
+[Nv 5]: +15 | +10 | 150s
+[Nv 6]: +18 | +12 | 180s
+[Nv 7]: +21 | +14 | 210s
+[Nv 8]: +24 | +16 | 240s
+[Nv 9]: +27 | +18 | 270s
+[Nv10]: +30 | +20 | 300s"
+              style="cursor: help; border-bottom: 1px dotted #1976d2;"
+            >Rapidez com Lança</span>
+        </label>
+    </div>
+</div>
+
+<!-- Poções de ASPD -->
+<div class="buffs-group">
+    <h2 id="h2-pocoes-aspd" style="text-align:center;">Poções de ASPD</h2>
+    <div class="buffs-grid">
+        <label class="buff-checkbox">
+            <input type="radio" name="aspd_pocao" id="aspd_pocao_nenhuma" value="nenhuma" checked>
+            <img src="https://www.divine-pride.net/img/items/item/bRO/645" style="opacity:0.5;" alt="">
+            Nenhuma poção
+        </label>
+        <label class="buff-checkbox">
+            <input type="radio" name="aspd_pocao" id="aspd_concentracao" value="concentracao">
+            <img src="https://www.divine-pride.net/img/items/item/bRO/645" alt="">
+            <span
+              title="
+Velocidade de ataque +10%.
+Duração: 30 minutos
+Peso: 10
+Nível necessário: 1
+Classes: Todas"
+              style="cursor: help; border-bottom: 1px dotted #1976d2;"
+            >Poção da Concentração</span>
+        </label>
+        <label class="buff-checkbox">
+            <input type="radio" name="aspd_pocao" id="aspd_despertar" value="despertar">
+            <img src="https://www.divine-pride.net/img/items/item/bRO/656" alt="">
+            <span
+              title="
+Velocidade de ataque +15%.
+O bônus substitui o efeito da Poção da Concentração.
+Duração: 30 minutos
+Peso: 15
+Nível necessário: 40
+Classes: Todas, exceto Bardos, Odaliscas, Sacerdotes e evoluções, Noviços"
+              style="cursor: help; border-bottom: 1px dotted #1976d2;"
+            >Poção do Despertar</span>
+        </label>
+        <label class="buff-checkbox">
+            <input type="radio" name="aspd_pocao" id="aspd_berserk" value="berserk">
+            <img src="https://www.divine-pride.net/img/items/item/bRO/657" alt="">
+            <span
+              title="
+Velocidade de ataque +20%.
+O bônus substitui o efeito da Poção da Concentração e do Despertar.
+Duração: 30 minutos
+Peso: 20
+Nível necessário: 85
+Classes: Todas, exceto Noviços, Arqueiros, Invocadores, Gatunos e Mercenários, Sábios, Aprendizes, Ninjas e evoluções"
+              style="cursor: help; border-bottom: 1px dotted #1976d2;"
+            >Poção da Fúria Selvagem</span>
+        </label>
+    </div>
+</div>
+
+<div style="display: flex; flex-direction: column; align-items: center; margin-top: 32px;">
+        <div class="aspd-label" id="aspd-label" style="font-size: 1.3em; font-weight: bold; margin-bottom: 8px; text-align: center;">
+        ASPD final:
+    </div>
+    <div class="resultado" id="resultado"
+        style="
+            background: #f8f8f8;
+            border-radius: 12px;
+            border: 2px solid #1976d2;
+            width: 220px;
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2em;
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px #0001;
+            text-align: center;
+        ">
+        -
+    </div>
+    <button class="btn-calc" id="btn-calc" style="margin: 0 auto; display: block;" onclick="calcularASPD()">Calcular ASPD</button>
+</div>
+
+<script>
+function calcularASPD() {
+    // Entradas principais
+    const classe_base = parseFloat(document.getElementById('classe_base').value) || 0;
+    const arma_escudo = document.getElementById('arma_escudo').checked ? 5 : 0; // Ajuste o valor se necessário
+    const agi = parseInt(document.getElementById('agi').value) || 0;
+    const dex = parseInt(document.getElementById('dex').value) || 0;
+    const bonus_equip = parseFloat(document.getElementById('bonus_equip').value) || 0;
+    const nivel = parseInt(document.getElementById('nivel').value) || 1;
+
+    // Buffs de AGI
+    let agi_buff = 0;
+    if (document.getElementById('agi_aumentar').checked) agi_buff += 12;
+    if (document.getElementById('agi_comida7').checked) agi_buff += 7;
+    if (document.getElementById('agi_comida10').checked) agi_buff += 10;
+    if (document.getElementById('agi_comida20').checked) agi_buff += 20;
+
+    // Buffs de DEX
+    let dex_buff = 0;
+    if (document.getElementById('dex_bencao').checked) dex_buff += 10;
+    if (document.getElementById('dex_comida7').checked) dex_buff += 7;
+    if (document.getElementById('dex_comida10').checked) dex_buff += 10;
+    if (document.getElementById('dex_comida20').checked) dex_buff += 20;
+
+    // Buff de Concentrar (+12% AGI e DEX base)
+    if (document.getElementById('agi_concentracao').checked) {
+        agi_buff += Math.floor(agi * 0.12);
+        dex_buff += Math.floor(dex * 0.12);
+    }
+
+    // Buffs de ASPD (%)
+    let aspd_percent = 0;
+    if (document.getElementById('aspd_adrenalina').checked) aspd_percent += 0.30;
+    if (document.getElementById('aspd_frenesi').checked) aspd_percent += 0.30;
+    if (document.getElementById('aspd_2maos').checked) aspd_percent += 0.30;
+    if (document.getElementById('aspd_lanca').checked) aspd_percent += 0.30;
+
+    // Aumentar Agilidade também dá +10% ASPD
+    if (document.getElementById('agi_aumentar').checked) aspd_percent += 0.10;
+
+    // Poção de ASPD (radio)
+    if (document.getElementById('aspd_concentracao').checked) aspd_percent += 0.10;
+    else if (document.getElementById('aspd_despertar').checked) aspd_percent += 0.15;
+    else if (document.getElementById('aspd_berserk').checked) aspd_percent += 0.20;
+
+    // Totais
+    const agi_total = agi + agi_buff;
+    const dex_total = dex + dex_buff;
+
+    // Fórmula oficial
+    const parte1 = classe_base + arma_escudo;
+    const parte2 = (Math.sqrt((agi_total ** 2) / 2 + (dex_total ** 2) / 5)) / 4;
+    const parte3 = (agi_total + bonus_equip) / 200;
+    let aspd = parte1 + parte2 + parte3;
+
+    // Aplicar buffs percentuais de ASPD
+    aspd *= (1 + aspd_percent);
+
+    // Limite máximo
+    const aspd_max = nivel > 99 ? 193 : 190;
+    const aspd_final = Math.max(144, Math.min(aspd, aspd_max));
+
+    document.getElementById('resultado').innerHTML = aspd_final.toFixed(2);
+}
+
+document.getElementById('toggle-dark').onclick = function() {
+    document.body.classList.toggle('dark-mode');
+    this.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+};
+
+const translations = {
+    pt: {
+        titulo: "Calculadora de ASPD",
+        aviso: 'Todos os cálculos desta página são baseados na versão <span style="color:#d32f2f;">Renewal</span> do Ragnarok Online.',
+        classe: "Classe Base:",
+        escudo: "Está usando escudo?",
+        agi: "AGI:",
+        dex: "DEX:",
+        bonus_equip: "Bônus de Equipamento:",
+        nivel: "Nível do personagem:",
+        buffs_agi: "Buffs de AGI",
+        buffs_dex: "Buffs de DES",
+        buffs_aspd: "Buffs de ASPD",
+        pocoes_aspd: "Poções de ASPD",
+        aspd_final: "ASPD final:",
+        calcular: "Calcular ASPD"
+    },
+    en: {
+        titulo: "ASPD Calculator",
+        aviso: 'All calculations on this page are based on the <span style="color:#d32f2f;">Renewal</span> version of Ragnarok Online.',
+        classe: "Base Class:",
+        escudo: "Using shield?",
+        agi: "AGI:",
+        dex: "DEX:",
+        bonus_equip: "Equipment Bonus:",
+        nivel: "Character level:",
+        buffs_agi: "AGI Buffs",
+        buffs_dex: "DEX Buffs",
+        buffs_aspd: "ASPD Buffs",
+        pocoes_aspd: "ASPD Potions",
+        aspd_final: "Final ASPD:",
+        calcular: "Calculate ASPD"
+    },
+    es: {
+        titulo: "Calculadora de ASPD",
+        aviso: 'Todos los cálculos de esta página se basan en la versión <span style="color:#d32f2f;">Renewal</span> de Ragnarok Online.',
+        classe: "Clase Base:",
+        escudo: "¿Usa escudo?",
+        agi: "AGI:",
+        dex: "DEX:",
+        bonus_equip: "Bono de Equipamiento:",
+        nivel: "Nivel del personaje:",
+        buffs_agi: "Buffs de AGI",
+        buffs_dex: "Buffs de DES",
+        buffs_aspd: "Buffs de ASPD",
+        pocoes_aspd: "Pociones de ASPD",
+        aspd_final: "ASPD final:",
+        calcular: "Calcular ASPD"
+    }
+};
+
+const langFlags = {
+    pt: { src: "https://flagcdn.com/24x18/br.png", label: "PT-BR" },
+    en: { src: "https://flagcdn.com/24x18/us.png", label: "EN" },
+    es: { src: "https://flagcdn.com/24x18/es.png", label: "ES" }
+};
+
+function setLang(lang) {
+    document.getElementById('titulo').textContent = translations[lang].titulo;
+    document.getElementById('aviso-renewal').innerHTML = translations[lang].aviso;
+    document.getElementById('label-classe').textContent = translations[lang].classe;
+    document.getElementById('label-escudo').textContent = translations[lang].escudo;
+    document.getElementById('label-agi').textContent = translations[lang].agi;
+    document.getElementById('label-dex').textContent = translations[lang].dex;
+    document.getElementById('label-bonus-equip').textContent = translations[lang].bonus_equip;
+    document.getElementById('label-nivel').textContent = translations[lang].nivel;
+    document.getElementById('h2-buffs-agi').textContent = translations[lang].buffs_agi;
+    document.getElementById('h2-buffs-dex').textContent = translations[lang].buffs_dex;
+    document.getElementById('h2-buffs-aspd').textContent = translations[lang].buffs_aspd;
+    document.getElementById('h2-pocoes-aspd').textContent = translations[lang].pocoes_aspd;
+    document.getElementById('aspd-label').textContent = translations[lang].aspd_final;
+    document.getElementById('btn-calc').textContent = translations[lang].calcular;
+    // Atualiza flag e label do dropdown
+    document.getElementById('lang-flag').src = langFlags[lang].src;
+    document.getElementById('lang-flag').alt = langFlags[lang].label;
+    document.getElementById('lang-label').textContent = langFlags[lang].label;
+}
+
+// Dropdown toggle
+document.getElementById('lang-dropdown-btn').onclick = function(e) {
+    e.stopPropagation();
+    const dd = document.getElementById('lang-dropdown');
+    // Só abre se estiver fechado
+    if (dd.style.display !== 'block') {
+        dd.style.display = 'block';
+    }
+    // Não faz nada se já está aberto (quem fecha é o clique fora ou na bandeira)
+};
+// Fecha dropdown ao clicar fora
+document.body.addEventListener('click', function() {
+    document.getElementById('lang-dropdown').style.display = 'none';
+});
+// Troca idioma ao clicar em uma bandeira
+document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        setLang(this.getAttribute('data-lang'));
+        document.getElementById('lang-dropdown').style.display = 'none'; // Fecha o dropdown ao selecionar
+        // Bloqueia temporariamente o botão principal para evitar reabrir
+        const langBtn = document.getElementById('lang-dropdown-btn');
+        langBtn.style.pointerEvents = 'none';
+        setTimeout(() => {
+            langBtn.style.pointerEvents = '';
+        }, 200);
+        e.stopPropagation();
+    });
+});
+
+// Inicializa em PT-BR
+setLang('pt');
+
+document.getElementById('lang-flag').onclick = function(e) {
+    e.stopPropagation();
+    const dd = document.getElementById('lang-dropdown');
+    dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+};
+document.body.addEventListener('click', function() {
+    document.getElementById('lang-dropdown').style.display = 'none';
+});
+document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        setLang(this.getAttribute('data-lang'));
+        document.getElementById('lang-dropdown').style.display = 'none';
+        // Bloqueia temporariamente para evitar reabrir
+        const langFlag = document.getElementById('lang-flag');
+        langFlag.style.pointerEvents = 'none';
+        setTimeout(() => {
+            langFlag.style.pointerEvents = '';
+        }, 200);
+        e.stopPropagation();
+    });
+});
+
+// Botão voltar ao topo
+const btnTopo = document.getElementById('btn-topo');
+window.addEventListener('scroll', function() {
+    btnTopo.style.display = window.scrollY > 200 ? 'flex' : 'none';
+});
+btnTopo.onclick = function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+</script>
+</body>
+</html>
